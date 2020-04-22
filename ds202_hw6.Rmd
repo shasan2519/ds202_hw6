@@ -1,0 +1,48 @@
+---
+title: "ds202_hw6"
+author: "Syed Hasan github: https://github.com/shasan2519/ds202_hw6"
+date: "4/22/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+BestShow <- readxl::read_xlsx("KIB.xlsx",sheet='Best in show')
+BestShowFull <- readxl::read_xlsx("KIB.xlsx",sheet='Best in show full sheet')
+```
+
+# Problem 1
+```{r}
+#Best show cleaning
+BestShow <- BestShow[,-c(2:4)]
+colnames(BestShow) <- BestShow[5,]
+BestShow <- BestShow[-c(1:6),]
+BestShow <- BestShow[,c(1,2,4,6,7,43)]
+colnames(BestShow) <- c("Breed","Type of Dog","Popular","Intelligence Score","Intelligence","Size")
+
+#best show full cleaning
+colnames(BestShowFull) <- BestShowFull[2,]
+BestShowFull <- BestShowFull[,c(1,3,5,30,32,41)]
+BestShowFull <- BestShowFull[-c(1:3),]
+colnames(BestShowFull) <- c("breed","type","score","popular","size","intel")
+BestShowFull$score <- as.numeric(BestShowFull$score)
+BestShowFull$popular <- as.numeric(BestShowFull$popular)
+head(BestShow)
+BestShowFull$size2 <- as.factor(BestShowFull$size)
+levels(BestShowFull$size2) <- c(3,2,1)
+BestShowFull$size2 <- as.numeric(BestShowFull$size2)
+BestShowFull$intel2 <- as.factor(BestShowFull$intel)
+```
+
+# Problem 2  
+
+```{r}
+BestShowFull %>%  ggplot(aes(x=score,y=-popular,color=type, shape=intel2))+geom_jitter(aes(size=size2/2))+labs(x="Data Score",y="Popularity",size="Size of Dog",shape="Intelligent",color="Type of Dog") + scale_size_continuous(breaks=c(.5,1,1.5), labels=c("Small","Medium","Large")) +geom_text(aes(label=breed),nudge_y=-3)
+
+```
